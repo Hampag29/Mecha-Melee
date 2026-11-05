@@ -49,14 +49,14 @@ public class Enemymech : MonoBehaviour
             if (!isDead) ApplyGravityMode();
         }
 
-        //punch: alive + clicked + player close enough
+        //punch, to check if the player is alive, the player clicked the left mouse button and is close enough
         if (!isDead && Mouse.current.leftButton.wasPressedThisFrame &&
             Vector2.Distance(transform.position, player.position) <= punchRange)
         {
             TakeDamage(punchDamage);
         }
     }
-
+    // to make the mech float or fall
     void ApplyGravityMode()
     {
         if (isFloating)
@@ -73,6 +73,7 @@ public class Enemymech : MonoBehaviour
         }
     }
 
+    // to lower the mechs health when it gets hit
     public void TakeDamage(int amount)
     {
         if (isDead) return;
@@ -89,7 +90,7 @@ public class Enemymech : MonoBehaviour
 
         if (deathcount < maxLives) StartCoroutine(Respawn());
     }
-
+    // respawn coroutine to bring the mech back to life
     IEnumerator Respawn()
     {
         yield return new WaitForSeconds(Random.Range(minRespawnDelay, maxRespawnDelay));
