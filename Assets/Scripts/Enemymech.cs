@@ -14,13 +14,20 @@ public class Enemymech : MonoBehaviour
 
     //random respawn for the mechs
     public float minRespawnDelay = 1f;
-    public float maxRespawnDelay = 4f;
+    public float maxRespawnDelay = 6f;
     public int maxLives = 5;
     private int deathcount = 0;
 
     //gravity mechanic
     public float floatSpeed = 1f;
     private bool isFloating = false;
+
+    //shooting
+    public GameObject bulletPrefab;                     // taking the bullet prefab and adding to the code
+    public Vector2 gunOffset = new Vector2(-1f, 0f);    // location for where the bullet shuld spawn
+    public float minFireDelay = 1f;                     // shortest time between shots
+    public float maxFireDelay = 3f;                     // longest time between shots
+    private float fireTimer;                            // counts down to the next shot
 
     //components needed for the mech
     private Rigidbody2D rb;
@@ -38,6 +45,7 @@ public class Enemymech : MonoBehaviour
         player = GameObject.FindWithTag("Player").transform;
         spawnPosition = transform.position;
         currentHealth = maxHealth;
+        fireTimer = Random.Range(minFireDelay, maxFireDelay);   // random wait before the first shot
     }
 
     void Update()
@@ -55,6 +63,24 @@ public class Enemymech : MonoBehaviour
         {
             TakeDamage(punchDamage);
         }
+
+        //shooting count down, then fire and pick a new random wait
+        if (!isDead)
+        {
+            fireTimer -= Time.deltaTime;
+            if (fireTimer <= 0)
+            {
+                Shoot();
+                fireTimer = Random.Range(minFireDelay, maxFireDelay);
+            }
+        }
+    }
+
+    // to create a new bullet at the gun tip (the bullet's own script makes it fly)
+    void Shoot()
+    {
+        Vector2 gunTip = (Vector2)transform.position + gunOffset;
+        Instantiate(bulletPrefab, gunTip, bulletPrefab.transform.rotation);
     }
     // to make the mech float or fall
     void ApplyGravityMode()
