@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     [Header("movement")] // adds a header in the player script inspector in unity 
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 9f;
+    [SerializeField] private float dashforce = 6f;
+    [SerializeField] private float dashDuration = 6f;
+    [SerializeField] private float acceleration = 0.5f;
 
     [Header("ground check")]
     [SerializeField] private Transform groundCheck;
@@ -24,6 +27,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         playerControls.Movement.Jump.performed += OnJump;
+        playerControls.Movement.Dash.performed += Dash;
     }
     private void OnEnable()
     {
@@ -50,7 +54,8 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         //rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-        rb.linearVelocity = new Vector2(movement.x * moveSpeed, rb.linearVelocity.y);
+        float targetXspeed = Mathf.MoveTowards(rb.linearVelocity.x, movement.x * moveSpeed, acceleration);
+        rb.linearVelocity = new Vector2(targetXspeed, rb.linearVelocity.y);
     }
 
     private void OnJump(InputAction.CallbackContext context)
@@ -60,5 +65,9 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
        
+    }
+    private void Dash(InputAction.CallbackContext context)
+    {
+        rb.linearVelocity = new Vector2(dashforce * (movement.x), 2);
     }
 }
