@@ -134,7 +134,10 @@ public class Enemymech : MonoBehaviour
         isDead = false;
         ApplyGravityMode();
     }
-
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+    }
     void SetVisible(bool visible)
     {
         sr.enabled = visible;
