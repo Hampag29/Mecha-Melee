@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 public class Enemymech : MonoBehaviour
 {
     //health
-    public int maxHealth = 75;
-    private int currentHealth;
+    //hamish here, had to change health to fit the attack system 
+    [SerializeField] private float maxHealth = 75f;
+    private float currentHealth;
 
     //player damage and range
     public int punchDamage = 25;
@@ -58,11 +59,11 @@ public class Enemymech : MonoBehaviour
         }
 
         //punch, to check if the player is alive, the player clicked the left mouse button and is close enough
-        if (!isDead && Mouse.current.leftButton.wasPressedThisFrame &&
-            Vector2.Distance(transform.position, player.position) <= punchRange)
-        {
-            TakeDamage(punchDamage);
-        }
+        //if (!isDead && Mouse.current.leftButton.wasPressedThisFrame &&
+        //    Vector2.Distance(transform.position, player.position) <= punchRange)
+        //{
+        //    TakeDamage(punchDamage);
+        //}
 
         //shooting count down, then fire and pick a new random wait
         if (!isDead)
@@ -100,13 +101,13 @@ public class Enemymech : MonoBehaviour
     }
 
     // to lower the mechs health when it gets hit
-    public void TakeDamage(int amount)
-    {
-        if (isDead) return;
+    //public void TakeDamage(int amount)
+    //{
+    //    if (isDead) return;
 
-        currentHealth -= amount;
-        if (currentHealth <= 0) Die();
-    }
+    //    currentHealth -= amount;
+    //    if (currentHealth <= 0) Die();
+    //}
 
     void Die()
     {
@@ -134,4 +135,15 @@ public class Enemymech : MonoBehaviour
         col.enabled = visible;
         rb.simulated = visible;
     }
+    public void damage(float damageAmount)
+    {
+        currentHealth -= damageAmount;
+        if (currentHealth <= 0)
+
+        {
+            Die();
+        }
+
+      }
+
 }
