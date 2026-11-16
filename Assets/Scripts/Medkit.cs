@@ -30,9 +30,13 @@ public class Medkit : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D hit)
     {
+        // if the medkit touches the player, the player gains 35 health
+        PlayerController player = hit.gameObject.GetComponent<PlayerController>();
+        if (player != null) player.setHealth(35);
+
         Enemymech mech = hit.gameObject.GetComponent<Enemymech>();
         if (mech != null) mech.Heal(35);
-        if (mech != null || hit.gameObject.CompareTag("Player")) Hide();
+        if (mech != null || player != null) Hide();
     }
 
     void Hide()   

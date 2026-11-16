@@ -25,6 +25,10 @@ public class Bulletcontroller : MonoBehaviour
         if (other.CompareTag("Enemy")) return; 
         if (other.isTrigger) return;          
 
+        // if the bullet hits the player, the player loses 15 health
+        if (other.CompareTag("Player"))
+            other.GetComponent<PlayerController>().setHealth(-damage);
+
 
         Destroy(gameObject);  
     }

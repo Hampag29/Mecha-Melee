@@ -141,6 +141,9 @@ public class PlayerController : MonoBehaviour
                   
                     enemyHealth.damage(DamageAmount);
                 }
+                // if the attack hits the boss, the boss takes damage too
+                Boss boss = hits[i].collider.GetComponent<Boss>();
+                if (boss != null) boss.damage(DamageAmount);
             }
             playerAnimator.SetTrigger("attack");
         }   
