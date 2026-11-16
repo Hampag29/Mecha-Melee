@@ -24,11 +24,16 @@ public class Enemymech : MonoBehaviour
     private bool isFloating = false;
 
     //shooting
-    public GameObject bulletPrefab;                     // taking the bullet prefab and adding to the code
-    public Vector2 gunOffset = new Vector2(-1f, 0f);    // location for where the bullet shuld spawn
-    public float minFireDelay = 1f;                     // shortest time between shots
-    public float maxFireDelay = 3f;                     // longest time between shots
-    private float fireTimer;                            // counts down to the next shot
+    // taking the bullet prefab and adding to the code
+    public GameObject bulletPrefab;  
+    // location for where the bullet shuld spawn
+    public Vector2 gunOffset = new Vector2(-1f, 0f);
+    // shortest time between shots
+    public float minFireDelay = 1f;
+    // longest time between shots
+    public float maxFireDelay = 3f;
+    // counts down to the next shot
+    private float fireTimer;                           
 
     //components needed for the mech
     private Rigidbody2D rb;
@@ -46,7 +51,9 @@ public class Enemymech : MonoBehaviour
         player = GameObject.FindWithTag("Player").transform;
         spawnPosition = transform.position;
         currentHealth = maxHealth;
-        fireTimer = Random.Range(minFireDelay, maxFireDelay);   // random wait before the first shot
+        //random wait before the first shot
+        fireTimer = Random.Range(minFireDelay, maxFireDelay);   
+        ApplyGravityMode();
     }
 
     void Update()
@@ -128,7 +135,10 @@ public class Enemymech : MonoBehaviour
         isDead = false;
         ApplyGravityMode();
     }
-
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+    }
     void SetVisible(bool visible)
     {
         sr.enabled = visible;
