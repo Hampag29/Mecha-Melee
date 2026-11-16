@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour
                 Enemymech enemyHealth = hits[i].collider.GetComponent<Enemymech>();
                 if (enemyHealth != null)
                 {
-                    //damage
+                  
                     enemyHealth.damage(DamageAmount);
                 }
             }
