@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class Boss : MonoBehaviour
 {
     //health (boss has 250, no respawn)
-    [SerializeField] private float maxHealth = 250f;
+  private float maxHealth = 250f;
     private float currentHealth;
 
     //gravity mechanic
@@ -67,7 +67,7 @@ public class Boss : MonoBehaviour
     void Shoot()
     {
         Vector2 gunTip = (Vector2)transform.position + gunOffset;
-        // shoot 3 bullets at once: one from the top hole, middle hole and bottom hole
+        // shoot 3 bullets at once one from the top hole, middle hole and bottom hole
         Instantiate(bulletPrefab, gunTip + new Vector2(0, holeSpacing), bulletPrefab.transform.rotation);
         Instantiate(bulletPrefab, gunTip, bulletPrefab.transform.rotation);
         Instantiate(bulletPrefab, gunTip - new Vector2(0, holeSpacing), bulletPrefab.transform.rotation);
@@ -85,7 +85,8 @@ public class Boss : MonoBehaviour
         else
         {
             rb.gravityScale = 1f;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;   // X is not frozen so the boss can shiver
+            // X is not frozen so the boss can shiver
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;  
             rb.linearVelocity = Vector2.zero;
         }
     }
