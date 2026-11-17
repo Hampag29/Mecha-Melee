@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float DamageAmount = 20f;
     [SerializeField] private float attackTime = 0.15f;
 
+
+    [SerializeField] public AudioClip attackSound;
+    private AudioSource Source;
+
     private Rigidbody2D rb;
     private PlayerControls playerControls;
     private Vector2 movement;
@@ -43,12 +47,14 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        Source = GetComponent<AudioSource>();
 
         playerControls.Movement.Jump.performed += OnJump;
         playerControls.Movement.Dash.performed += Dash;
         playerControls.Attack.basic.performed += Attack;
         playerControls.Gravity.Shift.performed += ApplyGravityMode;
         healthBar.setMaxHealth(maxHealth);
+
     }
     private void OnEnable()
     {
@@ -70,19 +76,10 @@ public class PlayerController : MonoBehaviour
     {
         movement = playerControls.Movement.Move.ReadValue<Vector2>();
         onGround = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        playerControls.Attack.basic.performed += Attack;
+
         updateAnimations();
         flipSprite();
 
-        // used as a test to see if healthbar is working will delete later 
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            setHealth(-20f);
-        }
-        if (Keyboard.current.fKey.wasPressedThisFrame)
-        {
-            setHealth(20f);
-        }
         attackTimeCounter += Time.deltaTime;
 
     }
@@ -102,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        if (onGround)
+        if (onGround && !isFloating)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
@@ -143,7 +140,7 @@ public class PlayerController : MonoBehaviour
         {
             attackTimeCounter = 0f;
             hits = Physics2D.CircleCastAll(attackTransform.position, attackRange, transform.right, 0f, attackLayer);
-
+            
             for (int i = 0; i < hits.Length; i++)
             {
                 Enemymech enemyHealth = hits[i].collider.GetComponent<Enemymech>();
@@ -157,6 +154,7 @@ public class PlayerController : MonoBehaviour
                 if (boss != null) boss.damage(DamageAmount);
             }
             playerAnimator.SetTrigger("attack");
+            Source.PlayOneShot(attackSound, 1.0f);
         }   
     }
     private void OnDrawGizmos()
