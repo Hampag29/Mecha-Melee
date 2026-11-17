@@ -119,6 +119,45 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Gravity",
+            "id": "3aab07de-9e14-4d0c-a903-72a50b5734ee",
+            "actions": [
+                {
+                    "name": "Shift",
+                    "type": "Button",
+                    "id": "48c149d7-73ee-4e80-99f6-fe30da4ce6ad",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5a2505f7-ddeb-4cd1-97bc-4c5fc3c6101b",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shift",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2aca3180-f765-42dd-aa65-cc40c6320d5f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shift",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

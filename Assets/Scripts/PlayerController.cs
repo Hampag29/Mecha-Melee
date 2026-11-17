@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private RaycastHit2D[] hits;
     private float attackTimeCounter;
+    private bool isFloating = false;
+    public float floatSpeed = 1f;
 
     private void Awake()
     {
@@ -44,6 +47,7 @@ public class PlayerController : MonoBehaviour
         playerControls.Movement.Jump.performed += OnJump;
         playerControls.Movement.Dash.performed += Dash;
         playerControls.Attack.basic.performed += Attack;
+        playerControls.Gravity.Shift.performed += ApplyGravityMode;
         healthBar.setMaxHealth(maxHealth);
     }
     private void OnEnable()
@@ -85,8 +89,15 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         //rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        if(!isFloating)
+        { 
         float targetXspeed = Mathf.MoveTowards(rb.linearVelocity.x, movement.x * moveSpeed, acceleration);
         rb.linearVelocity = new Vector2(targetXspeed, rb.linearVelocity.y);
+            }
+        if (Health <=0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     private void OnJump(InputAction.CallbackContext context)
@@ -151,5 +162,21 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(attackTransform.position, attackRange);
+    }
+   private void ApplyGravityMode(InputAction.CallbackContext context)
+    {
+        isFloating = !isFloating;
+        if (isFloating)
+        {
+            rb.gravityScale = 0f;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.linearVelocity = new Vector2(Random.Range(-1f, 1f), Random.Range(0.5f, 1f)).normalized * floatSpeed;
+        }
+        else
+        {
+            rb.gravityScale = 1f;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.linearVelocity = Vector2.zero;
+        }
     }
 }

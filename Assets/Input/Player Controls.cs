@@ -205,6 +205,45 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Gravity"",
+            ""id"": ""3aab07de-9e14-4d0c-a903-72a50b5734ee"",
+            ""actions"": [
+                {
+                    ""name"": ""Shift"",
+                    ""type"": ""Button"",
+                    ""id"": ""48c149d7-73ee-4e80-99f6-fe30da4ce6ad"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""5a2505f7-ddeb-4cd1-97bc-4c5fc3c6101b"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2aca3180-f765-42dd-aa65-cc40c6320d5f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -217,12 +256,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Attack
         m_Attack = asset.FindActionMap("Attack", throwIfNotFound: true);
         m_Attack_basic = m_Attack.FindAction("basic", throwIfNotFound: true);
+        // Gravity
+        m_Gravity = asset.FindActionMap("Gravity", throwIfNotFound: true);
+        m_Gravity_Shift = m_Gravity.FindAction("Shift", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, PlayerControls.Movement.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Attack.enabled, "This will cause a leak and performance issues, PlayerControls.Attack.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Gravity.enabled, "This will cause a leak and performance issues, PlayerControls.Gravity.Disable() has not been called.");
     }
 
     /// <summary>
@@ -508,6 +551,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="AttackActions" /> instance referencing this action map.
     /// </summary>
     public AttackActions @Attack => new AttackActions(this);
+
+    // Gravity
+    private readonly InputActionMap m_Gravity;
+    private List<IGravityActions> m_GravityActionsCallbackInterfaces = new List<IGravityActions>();
+    private readonly InputAction m_Gravity_Shift;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Gravity".
+    /// </summary>
+    public struct GravityActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public GravityActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Gravity/Shift".
+        /// </summary>
+        public InputAction @Shift => m_Wrapper.m_Gravity_Shift;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Gravity; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="GravityActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(GravityActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="GravityActions" />
+        public void AddCallbacks(IGravityActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GravityActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GravityActionsCallbackInterfaces.Add(instance);
+            @Shift.started += instance.OnShift;
+            @Shift.performed += instance.OnShift;
+            @Shift.canceled += instance.OnShift;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="GravityActions" />
+        private void UnregisterCallbacks(IGravityActions instance)
+        {
+            @Shift.started -= instance.OnShift;
+            @Shift.performed -= instance.OnShift;
+            @Shift.canceled -= instance.OnShift;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="GravityActions.UnregisterCallbacks(IGravityActions)" />.
+        /// </summary>
+        /// <seealso cref="GravityActions.UnregisterCallbacks(IGravityActions)" />
+        public void RemoveCallbacks(IGravityActions instance)
+        {
+            if (m_Wrapper.m_GravityActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="GravityActions.AddCallbacks(IGravityActions)" />
+        /// <seealso cref="GravityActions.RemoveCallbacks(IGravityActions)" />
+        /// <seealso cref="GravityActions.UnregisterCallbacks(IGravityActions)" />
+        public void SetCallbacks(IGravityActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GravityActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GravityActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="GravityActions" /> instance referencing this action map.
+    /// </summary>
+    public GravityActions @Gravity => new GravityActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -551,5 +690,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBasic(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Gravity" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="GravityActions.AddCallbacks(IGravityActions)" />
+    /// <seealso cref="GravityActions.RemoveCallbacks(IGravityActions)" />
+    public interface IGravityActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Shift" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShift(InputAction.CallbackContext context);
     }
 }
